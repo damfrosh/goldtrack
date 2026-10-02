@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="GoldTrack trading journal dashboard and market chart.">
+  <title>GoldTrack — Trading Journal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="strategy-rules.js" defer></script>
+  <script src="backtest-engine.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#dashboard" aria-label="GoldTrack dashboard">
+        <span class="brand-mark" aria-hidden="true">G</span>
+        <span class="brand-copy"><strong>GoldTrack</strong><small>TRADING JOURNAL</small></span>
+      </a>
+
+      <div class="nav-caption">WORKSPACE</div>
+      <nav class="main-nav">
+        <button class="nav-link is-active" type="button" data-view="dashboard" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">◫</span><span>Dashboard</span>
+        </button>
+        <button class="nav-link" type="button" data-view="chart">
+          <span class="nav-icon" aria-hidden="true">⌁</span><span>Live Chart</span>
+        </button>
+        <button class="nav-link" type="button" data-view="journal">
+          <span class="nav-icon" aria-hidden="true">▤</span><span>Trade Journal</span>
+        </button>
+        <button class="nav-link" type="button" data-view="analytics">
+          <span class="nav-icon" aria-hidden="true">◷</span><span>Analytics</span>
+        </button>
+        <button class="nav-link" type="button" data-view="risk">
+          <span class="nav-icon" aria-hidden="true">◇</span><span>Risk Management</span>
+        </button>
+        <button class="nav-link" type="button" data-view="strategy">
+          <span class="nav-icon" aria-hidden="true">⌘</span><span>Strategy Builder</span>
+        </button>
+      </nav>
+
+      <div class="nav-caption next-caption">COMING IN NEXT STAGES</div>
+      <div class="future-nav" aria-label="Planned sections">
+        <div class="future-link"><span class="nav-icon" aria-hidden="true">⚙</span><span>Settings</span><span class="stage-tag">5</span></div>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+      <div class="local-note">
+        <span class="local-note-icon" aria-hidden="true">▣</span>
+        <div><strong>Your data stays here</strong><p>Journal data will be saved in this browser on this device.</p></div>
+      </div>
+      <div class="profile-row">
+        <div class="avatar" aria-hidden="true">GT</div>
+        <div class="profile-copy"><strong id="account-name">My Trading Account</strong><span>Personal workspace</span></div>
+        <span class="online-dot" title="Ready"></span>
+      </div>
+    </aside>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <button class="nav-link is-active" type="button" data-view="dashboard" aria-current="page"><span class="nav-icon" aria-hidden="true">◫</span><span>Dashboard</span></button>
+      <button class="nav-link" type="button" data-view="chart"><span class="nav-icon" aria-hidden="true">⌁</span><span>Chart</span></button>
+      <button class="nav-link" type="button" data-view="journal"><span class="nav-icon" aria-hidden="true">▤</span><span>Journal</span></button>
+      <button class="nav-link" type="button" data-view="analytics"><span class="nav-icon" aria-hidden="true">◷</span><span>Analytics</span></button>
+      <button class="nav-link" type="button" data-view="risk"><span class="nav-icon" aria-hidden="true">◇</span><span>Risk</span></button>
+      <button class="nav-link" type="button" data-view="strategy"><span class="nav-icon" aria-hidden="true">⌘</span><span>Strategies</span></button>
+    </nav>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark" aria-hidden="true">G</span><strong>GoldTrack</strong></div>
+        <div class="breadcrumb"><span>Workspace</span><span class="breadcrumb-divider">/</span><strong id="page-crumb">Dashboard</strong></div>
+        <div class="topbar-right"><span class="saved-indicator"><span class="status-dot"></span><span id="save-status">Local data</span></span><span class="topbar-date" id="today-label"></span></div>
+      </header>
+
+      <section class="view is-visible" id="dashboard-view" aria-labelledby="dashboard-title">
+        <div class="page-heading">
+          <div><p class="eyebrow">YOUR TRADING OVERVIEW</p><h1 id="dashboard-title">Dashboard</h1><p class="page-subtitle">A clear view of your trading performance, built from your journal.</p></div>
+          <button class="button button-primary" id="open-chart-button" type="button"><span aria-hidden="true">⌁</span> Open market chart</button>
+        </div>
+
+        <div class="empty-banner" id="empty-banner">
+          <span class="empty-banner-icon" aria-hidden="true">✦</span>
+          <div><strong>Your performance starts with your first journal entry</strong><p>These figures are calculated from saved trades. There are no journal records yet, so no performance has been estimated or filled in.</p></div>
+          <span class="banner-stage">JOURNAL · STAGE 2</span>
+        </div>
+
+        <div class="section-heading"><div><h2>Performance snapshot</h2><p>Closed trades only · calculated from saved records</p></div><span class="range-label"><span class="range-dot"></span> All time</span></div>
+        <div class="metrics-grid">
+          <article class="metric-card metric-primary"><div class="metric-top"><span>Net profit / loss</span><span class="metric-symbol" aria-hidden="true">↗</span></div><strong class="metric-value" id="net-pnl">—</strong><div class="metric-foot"><span id="closed-trades-label">0 closed trades</span><span class="metric-foot-mark">●</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span>Total trades</span><span class="metric-icon" aria-hidden="true">▤</span></div><strong class="metric-value" id="total-trades">0</strong><div class="metric-foot">All saved records</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Win rate</span><span class="metric-icon" aria-hidden="true">◉</span></div><strong class="metric-value" id="win-rate">0%</strong><div class="metric-foot"><span id="win-loss-count">0 wins · 0 losses</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span>Average win</span><span class="metric-icon profit-text" aria-hidden="true">↗</span></div><strong class="metric-value" id="average-win">—</strong><div class="metric-foot">Per winning trade</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Average loss</span><span class="metric-icon loss-text" aria-hidden="true">↘</span></div><strong class="metric-value" id="average-loss">—</strong><div class="metric-foot">Per losing trade</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Profit factor</span><span class="metric-icon" aria-hidden="true">◒</span></div><strong class="metric-value" id="profit-factor">—</strong><div class="metric-foot">Gross wins ÷ gross losses</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Best trade</span><span class="metric-icon profit-text" aria-hidden="true">★</span></div><strong class="metric-value" id="best-trade">—</strong><div class="metric-foot" id="best-trade-date">No closed trades</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Worst trade</span><span class="metric-icon loss-text" aria-hidden="true">⌄</span></div><strong class="metric-value" id="worst-trade">—</strong><div class="metric-foot" id="worst-trade-date">No closed trades</div></article>
+        </div>
+
+        <div class="charts-grid">
+          <article class="panel chart-panel">
+            <div class="panel-heading"><div><h2>Equity curve</h2><p>Running net profit / loss from closed trades</p></div><span class="chart-period">ALL TIME</span></div>
+            <div class="chart-wrap" id="equity-chart" aria-label="Equity curve chart" role="img"></div>
+          </article>
+          <article class="panel chart-panel monthly-panel">
+            <div class="panel-heading"><div><h2>Monthly performance</h2><p>Realized profit / loss by month</p></div><span class="chart-period">6 MONTHS</span></div>
+            <div class="chart-wrap" id="monthly-chart" aria-label="Monthly performance chart" role="img"></div>
+          </article>
+        </div>
+
+        <div class="bottom-grid">
+          <article class="panel recent-panel"><div class="panel-heading"><div><h2>Recent trades</h2><p>Your latest journal activity</p></div><span class="subtle-pill">LATEST</span></div><div class="table-scroll"><table><thead><tr><th>TRADE</th><th>DATE</th><th>RESULT</th><th>OUTCOME</th></tr></thead><tbody id="recent-trades"><tr><td colspan="4" class="table-empty">Your saved trades will appear here.</td></tr></tbody></table></div></article>
+          <article class="panel activity-panel"><div class="panel-heading"><div><h2>Trading activity</h2><p>Journal entries by day</p></div><span class="subtle-pill">LAST 7 DAYS</span></div><div class="activity-list" id="activity-list"><p class="activity-empty">Activity will appear after you add trades.</p></div></article>
+        </div>
+        <footer class="page-footer"><span>GoldTrack · Personal trading journal</span><span>Performance figures reflect records saved in this browser only.</span></footer>
+      </section>
+
+      <section class="view" id="chart-view" aria-labelledby="chart-title" hidden>
+        <div class="page-heading chart-page-heading">
+          <div><p class="eyebrow">MARKET RESEARCH</p><h1 id="chart-title">Live Chart</h1><p class="page-subtitle">Explore markets with the TradingView Advanced Chart widget.</p></div>
+          <div class="chart-source-pill"><span class="status-dot"></span> Powered by TradingView</div>
+        </div>
+        <div class="chart-disclaimer"><span class="info-icon" aria-hidden="true">i</span><p>Market data is supplied by TradingView and its data providers. Availability, pricing, and possible delays vary by instrument and provider. This chart is not connected to your broker and does not automatically record trades.</p></div>
+        <article class="panel live-chart-panel">
+          <div class="chart-controls">
+            <label class="chart-control"><span>Symbol</span><input id="symbol-input" type="text" value="OANDA:XAUUSD" maxlength="30" autocomplete="off" aria-label="Market symbol, for example OANDA:XAUUSD"></label>
+            <label class="chart-control"><span>Timeframe</span><select id="timeframe-select" aria-label="Chart timeframe"><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="60">1 hour</option><option value="240">4 hours</option><option value="D" selected>1 day</option><option value="W">1 week</option><option value="M">1 month</option></select></label>
+            <button class="button button-secondary" id="load-chart-button" type="button">Load chart <span aria-hidden="true">↗</span></button>
+            <span class="chart-control-hint">Use a provider-qualified symbol if needed, e.g. OANDA:XAUUSD.</span>
+          </div>
+          <div class="tradingview-shell"><div class="chart-loading" id="chart-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Loading TradingView chart…</span></div><div id="tradingview-chart" class="tradingview-chart" aria-label="TradingView market chart"></div></div>
+          <div class="chart-fallback" id="chart-fallback" role="status" hidden><strong>Chart unavailable</strong><span>TradingView could not be reached. Check your internet connection or try again later. The journal and saved data do not depend on this external chart.</span><button class="text-button" id="retry-chart-button" type="button">Try again</button></div>
+          <div class="chart-bottom-note"><span>↗</span> Chart tools and market availability are provided by TradingView. Drawing and indicator options may vary by symbol and widget availability.</div>
+        </article>
+        <footer class="page-footer"><span>Market research only · Not financial advice</span><span>GoldTrack does not execute or transmit orders.</span></footer>
+      </section>
+
+      <section class="view" id="journal-view" aria-labelledby="journal-title" hidden>
+        <div class="page-heading journal-heading">
+          <div><p class="eyebrow">YOUR TRADE RECORDS</p><h1 id="journal-title">Trade Journal</h1><p class="page-subtitle">Record the plan, execution, and lessons from every trade.</p></div>
+          <div class="journal-heading-actions"><button class="button button-secondary" id="export-csv-button" type="button">Export CSV</button><button class="button button-secondary" id="export-json-button" type="button">JSON backup</button><button class="button button-primary" id="new-trade-button" type="button"><span aria-hidden="true">＋</span> Add trade</button></div>
+        </div>
+
+        <div class="journal-storage-note"><span aria-hidden="true">▣</span><p>Records are saved in local storage in this browser and on this device only. They do not sync across devices. Export a backup regularly.</p></div>
+
+        <section class="panel trade-editor" id="trade-editor" hidden aria-labelledby="trade-form-title">
+          <div class="panel-heading"><div><h2 id="trade-form-title">Add a trade</h2><p>Actual results are entered manually. No broker connection or price-based P/L calculation is used.</p></div><button class="icon-button" id="close-trade-form" type="button" aria-label="Close trade form">×</button></div>
+          <form id="trade-form" novalidate>
+            <input id="trade-id" name="id" type="hidden">
+            <div class="form-section-title">Trade details</div>
+            <div class="trade-form-grid">
+              <label class="form-field"><span>Date and time <b>*</b></span><input id="trade-date" name="dateTime" type="datetime-local" required></label>
+              <label class="form-field"><span>Symbol <b>*</b></span><input id="trade-symbol" name="symbol" type="text" value="XAUUSD" maxlength="30" required autocomplete="off" placeholder="XAUUSD"></label>
+              <label class="form-field"><span>Direction <b>*</b></span><select id="trade-direction" name="direction" required><option value="Buy">Buy</option><option value="Sell">Sell</option></select></label>
+              <label class="form-field"><span>Trade status <b>*</b></span><select id="trade-outcome" name="outcome" required><option value="Open">Open</option><option value="Win">Win</option><option value="Loss">Loss</option><option value="Breakeven">Breakeven</option></select></label>
+              <label class="form-field"><span>Entry price <b>*</b></span><input id="trade-entry" name="entryPrice" type="number" min="0" step="any" required inputmode="decimal" placeholder="0.00"></label>
+              <label class="form-field"><span>Exit price</span><input id="trade-exit" name="exitPrice" type="number" min="0" step="any" inputmode="decimal" placeholder="Optional"></label>
+              <label class="form-field"><span>Stop-loss</span><input id="trade-stop" name="stopLoss" type="number" min="0" step="any" inputmode="decimal" placeholder="Optional"></label>
+              <label class="form-field"><span>Take-profit</span><input id="trade-target" name="takeProfit" type="number" min="0" step="any" inputmode="decimal" placeholder="Optional"></label>
+              <label class="form-field"><span>Lot size <b>*</b></span><input id="trade-lots" name="lotSize" type="number" min="0.000001" step="any" required inputmode="decimal" placeholder="0.01"></label>
+              <label class="form-field"><span>Account currency</span><select id="trade-currency" name="currency"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Pound Sterling</option><option value="CAD">CAD — Canadian Dollar</option><option value="AUD">AUD — Australian Dollar</option><option value="JPY">JPY — Japanese Yen</option><option value="CHF">CHF — Swiss Franc</option><option value="NZD">NZD — New Zealand Dollar</option></select></label>
+              <label class="form-field"><span>Actual profit / loss</span><input id="trade-pnl" name="profitLoss" type="number" step="any" inputmode="decimal" placeholder="Enter actual result manually"></label>
+              <label class="form-field"><span>Trading session</span><select id="trade-session" name="session"><option value="">Select session</option><option>Asian</option><option>London</option><option>New York</option><option>London / New York overlap</option><option>Other</option></select></label>
+              <label class="form-field"><span>Strategy</span><input id="trade-strategy" name="strategy" type="text" maxlength="80" placeholder="e.g. Breakout"></label>
+              <label class="form-field"><span>Setup type</span><input id="trade-setup" name="setup" type="text" maxlength="80" placeholder="e.g. Retest"></label>
+            </div>
+            <div class="form-section-title notes-title">Trade notes</div>
+            <div class="trade-form-grid notes-grid">
+              <label class="form-field"><span>Entry reason</span><textarea id="trade-entry-reason" name="entryReason" rows="3" maxlength="1500" placeholder="What was your entry thesis?"></textarea></label>
+              <label class="form-field"><span>Exit reason</span><textarea id="trade-exit-reason" name="exitReason" rows="3" maxlength="1500" placeholder="Why did you exit or plan to exit?"></textarea></label>
+              <label class="form-field"><span>Emotions</span><textarea id="trade-emotions" name="emotions" rows="3" maxlength="1000" placeholder="How did you feel during the trade?"></textarea></label>
+              <label class="form-field"><span>Mistakes</span><textarea id="trade-mistakes" name="mistakes" rows="3" maxlength="1000" placeholder="What would you do differently?"></textarea></label>
+              <label class="form-field field-wide"><span>Lessons learned</span><textarea id="trade-lessons" name="lessons" rows="3" maxlength="1500" placeholder="Capture a useful takeaway for next time."></textarea></label>
+              <div class="form-field field-wide screenshot-field"><label for="trade-screenshot">Trade screenshot <span class="field-optional">optional · compressed before saving</span></label><input id="trade-screenshot" name="screenshot" type="file" accept="image/*"><span class="field-help" id="screenshot-help">A smaller JPEG copy is saved with this browser record. Local storage has limited capacity.</span><span class="attachment-existing" id="existing-attachment" hidden>Existing screenshot will be kept unless you choose a replacement.</span><label class="remove-attachment" id="remove-attachment-wrap" hidden><input id="remove-attachment" type="checkbox"> Remove the saved screenshot</label></div>
+            </div>
+            <p class="form-error" id="trade-form-error" role="alert" hidden></p>
+            <div class="form-actions"><button class="button button-secondary" id="cancel-trade-button" type="button">Cancel</button><button class="button button-primary" id="save-trade-button" type="submit">Save trade</button></div>
+          </form>
+        </section>
+
+        <section class="panel trades-panel" aria-labelledby="trade-history-title">
+          <div class="panel-heading trade-history-heading"><div><h2 id="trade-history-title">Trade history</h2><p><span id="journal-count">0 records</span> · saved automatically</p></div><div class="data-actions"><button class="small-action" id="import-csv-button" type="button">Import CSV</button><button class="small-action" id="restore-json-button" type="button">Restore JSON</button><input id="csv-file-input" type="file" accept=".csv,text/csv" hidden><input id="json-file-input" type="file" accept=".json,application/json" hidden></div></div>
+          <div class="trade-filters">
+            <label class="filter-search"><span class="sr-only">Search trades</span><span aria-hidden="true">⌕</span><input id="trade-search" type="search" placeholder="Search symbol or notes…" autocomplete="off"></label>
+            <label class="filter-field"><span>From</span><input id="filter-date-from" type="date" aria-label="Filter from date"></label>
+            <label class="filter-field"><span>To</span><input id="filter-date-to" type="date" aria-label="Filter to date"></label>
+            <label class="filter-field"><span>Direction</span><select id="filter-direction" aria-label="Filter by direction"><option value="">All</option><option>Buy</option><option>Sell</option></select></label>
+            <label class="filter-field"><span>Status</span><select id="filter-status" aria-label="Filter by status"><option value="">All</option><option>Open</option><option>Win</option><option>Loss</option><option>Breakeven</option></select></label>
+            <label class="filter-field"><span>Strategy</span><select id="filter-strategy" aria-label="Filter by strategy"><option value="">All strategies</option></select></label>
+            <label class="filter-field sort-filter"><span>Sort</span><select id="trade-sort" aria-label="Sort trades"><option value="date-desc">Newest date</option><option value="date-asc">Oldest date</option><option value="pnl-desc">P/L high to low</option><option value="pnl-asc">P/L low to high</option></select></label>
+            <button class="text-button clear-filters" id="clear-trade-filters" type="button">Clear filters</button>
+          </div>
+          <div class="journal-table-scroll"><table class="journal-table"><thead><tr><th>DATE</th><th>SYMBOL</th><th>DIR.</th><th>ENTRY</th><th>EXIT</th><th>STOP</th><th>TARGET</th><th>LOTS</th><th>STATUS</th><th>PROFIT / LOSS</th><th>ACTIONS</th></tr></thead><tbody id="trade-history-body"></tbody></table></div>
+          <div class="journal-empty" id="journal-empty"><div class="journal-empty-icon" aria-hidden="true">▤</div><strong id="journal-empty-title">No trades recorded yet</strong><p id="journal-empty-message">Start your journal with a trade record. Your dashboard will update from saved closed trades.</p><button class="button button-primary" id="empty-add-trade" type="button">Add your first trade</button></div>
+          <div class="journal-table-footer"><span id="shown-trades-label">Showing 0 trades</span><span>Open trades are excluded from closed performance calculations.</span></div>
+        </section>
+        <footer class="page-footer"><span>Records stay in this browser · No cross-device sync</span><span>Actual P/L is manual; broker contract specifications are not assumed.</span></footer>
+      </section>
+
+      <section class="view" id="analytics-view" aria-labelledby="analytics-title" hidden>
+        <div class="page-heading analytics-heading">
+          <div><p class="eyebrow">PERFORMANCE &amp; PATTERNS</p><h1 id="analytics-title">Analytics</h1><p class="page-subtitle">Explore results from your saved journal records. No price-based P/L estimates.</p></div>
+          <button class="button button-secondary" id="export-analytics-csv" type="button"><span aria-hidden="true">⇩</span> Export filtered trades</button>
+        </div>
+
+        <div class="analytics-notice" id="analytics-notice" role="status" hidden><span class="info-icon" aria-hidden="true">i</span><p id="analytics-notice-text"></p></div>
+
+        <section class="panel analytics-filters" aria-label="Analytics filters">
+          <div class="analytics-filter-title"><div><strong>Filter results</strong><span>All charts and statistics use the same selection.</span></div><button class="text-button" id="clear-analytics-filters" type="button">Clear filters</button></div>
+          <div class="analytics-filter-grid">
+            <label class="analytics-filter"><span>From date</span><input id="analytics-date-from" type="date"></label>
+            <label class="analytics-filter"><span>To date</span><input id="analytics-date-to" type="date"></label>
+            <label class="analytics-filter"><span>Symbol</span><select id="analytics-symbol"><option value="">All symbols</option></select></label>
+            <label class="analytics-filter"><span>Direction</span><select id="analytics-direction"><option value="">Buy &amp; Sell</option><option value="Buy">Buy</option><option value="Sell">Sell</option></select></label>
+            <label class="analytics-filter"><span>Strategy</span><select id="analytics-strategy"><option value="">All strategies</option></select></label>
+            <label class="analytics-filter"><span>Trading session</span><select id="analytics-session"><option value="">All sessions</option></select></label>
+            <label class="analytics-filter"><span>Account currency</span><select id="analytics-currency"><option value="">All currencies</option></select></label>
+          </div>
+          <div class="analytics-scope"><span class="scope-dot"></span><span id="analytics-scope-label">0 matching records · 0 closed results</span><span class="breakeven-rule">Win rate: wins ÷ (wins + losses); breakeven excluded.</span></div>
+        </section>
+
+        <div class="analytics-section-heading"><div><h2>Performance summary</h2><p>Closed trades with a valid, manually recorded result</p></div><span class="chart-period">FILTERED RESULTS</span></div>
+        <div class="analytics-metrics-grid">
+          <article class="metric-card metric-primary"><div class="metric-top"><span>Net profit / loss</span><span class="metric-symbol" aria-hidden="true">↗</span></div><strong class="metric-value" id="analytics-net">—</strong><div class="metric-foot" id="analytics-net-foot">No closed results</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Closed trades</span><span class="metric-icon" aria-hidden="true">▤</span></div><strong class="metric-value" id="analytics-closed-count">0</strong><div class="metric-foot" id="analytics-outcome-counts">0 wins · 0 losses · 0 breakeven</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Win rate</span><span class="metric-icon" aria-hidden="true">◉</span></div><strong class="metric-value" id="analytics-win-rate">—</strong><div class="metric-foot">Breakeven excluded from denominator</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Profit factor</span><span class="metric-icon" aria-hidden="true">◒</span></div><strong class="metric-value" id="analytics-profit-factor">—</strong><div class="metric-foot">Gross profit ÷ absolute gross loss</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Gross profit</span><span class="metric-icon profit-text" aria-hidden="true">↗</span></div><strong class="metric-value" id="analytics-gross-profit">—</strong><div class="metric-foot">Sum of positive closed results</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Gross loss</span><span class="metric-icon loss-text" aria-hidden="true">↘</span></div><strong class="metric-value" id="analytics-gross-loss">—</strong><div class="metric-foot">Absolute sum of negative results</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Average winning trade</span><span class="metric-icon profit-text" aria-hidden="true">＋</span></div><strong class="metric-value" id="analytics-average-win">—</strong><div class="metric-foot">Gross profit ÷ wins</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Average losing trade</span><span class="metric-icon loss-text" aria-hidden="true">−</span></div><strong class="metric-value" id="analytics-average-loss">—</strong><div class="metric-foot">Mean of negative results</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Largest winner</span><span class="metric-icon profit-text" aria-hidden="true">★</span></div><strong class="metric-value" id="analytics-largest-win">—</strong><div class="metric-foot" id="analytics-largest-win-label">No winning trades</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Largest loser</span><span class="metric-icon loss-text" aria-hidden="true">⌄</span></div><strong class="metric-value" id="analytics-largest-loss">—</strong><div class="metric-foot" id="analytics-largest-loss-label">No losing trades</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Maximum drawdown</span><span class="metric-icon loss-text" aria-hidden="true">⌄</span></div><strong class="metric-value" id="analytics-drawdown">—</strong><div class="metric-foot">Peak-to-trough on cumulative P/L</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Current win / loss streak</span><span class="metric-icon" aria-hidden="true">⇄</span></div><strong class="metric-value streak-value" id="analytics-current-streak">—</strong><div class="metric-foot">Breakeven breaks a streak</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Longest win streak</span><span class="metric-icon profit-text" aria-hidden="true">↗</span></div><strong class="metric-value" id="analytics-longest-win">0</strong><div class="metric-foot">Consecutive wins</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Longest loss streak</span><span class="metric-icon loss-text" aria-hidden="true">↘</span></div><strong class="metric-value" id="analytics-longest-loss">0</strong><div class="metric-foot">Consecutive losses</div></article>
+        </div>
+
+        <div class="analytics-charts-grid">
+          <article class="panel analytics-chart-panel analytics-wide-panel"><div class="panel-heading"><div><h2>Cumulative equity</h2><p>Chronological running P/L from closed results</p></div><span class="chart-period">FILTERED</span></div><div class="analytics-chart-wrap" id="analytics-equity-chart" role="img" aria-label="Cumulative equity curve"></div></article>
+          <article class="panel analytics-chart-panel"><div class="panel-heading"><div><h2>Performance over time</h2><p>Closed profit / loss by selected period</p></div><label class="chart-select"><span class="sr-only">Performance aggregation</span><select id="analytics-period" aria-label="Performance aggregation"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly" selected>Monthly</option></select></label></div><div class="analytics-chart-wrap" id="analytics-period-chart" role="img" aria-label="Performance over time"></div></article>
+          <article class="panel analytics-chart-panel"><div class="panel-heading"><div><h2>Win / loss distribution</h2><p>Closed-result outcomes; breakeven shown separately</p></div><span class="chart-period">COUNT</span></div><div class="analytics-chart-wrap distribution-chart" id="analytics-distribution-chart" role="img" aria-label="Win, loss, and breakeven distribution"></div></article>
+          <article class="panel analytics-chart-panel"><div class="panel-heading"><div><h2>Buy vs Sell</h2><p>Counts and realized P/L by direction</p></div><span class="chart-period">CLOSED</span></div><div class="analytics-chart-wrap group-chart" id="analytics-direction-chart" role="img" aria-label="Buy versus sell performance"></div></article>
+          <article class="panel analytics-chart-panel"><div class="panel-heading"><div><h2>By strategy</h2><p>Closed results, sorted by net P/L</p></div><span class="chart-period">CLOSED</span></div><div class="analytics-chart-wrap group-chart" id="analytics-strategy-chart" role="img" aria-label="Performance by strategy"></div></article>
+          <article class="panel analytics-chart-panel"><div class="panel-heading"><div><h2>By trading session</h2><p>Closed results, sorted by net P/L</p></div><span class="chart-period">CLOSED</span></div><div class="analytics-chart-wrap group-chart" id="analytics-session-chart" role="img" aria-label="Performance by trading session"></div></article>
+        </div>
+        <div class="analytics-method-note"><span aria-hidden="true">ⓘ</span><p>Win rate is wins ÷ (wins + losses); breakevens are excluded. A win or loss is classified by the sign of recorded actual P/L. Open trades and records without a valid result are excluded. Drawdown is the largest peak-to-trough decline on cumulative realized P/L starting from zero. Mixed account currencies are never added or converted.</p></div>
+        <footer class="page-footer"><span>Calculated from the existing GoldTrack journal in this browser.</span><span>Actual P/L is manually entered; no broker contract assumptions are made.</span></footer>
+      </section>
+
+      <section class="view" id="risk-view" aria-labelledby="risk-title" hidden>
+        <div class="page-heading risk-page-heading">
+          <div><p class="eyebrow">PLAN THE RISK BEFORE THE TRADE</p><h1 id="risk-title">Risk Management</h1><p class="page-subtitle">A planning calculator and separate list of saved trade ideas. Nothing here places orders.</p></div>
+          <span class="risk-planning-badge"><span class="scope-dot"></span> PLANNING TOOL ONLY</span>
+        </div>
+
+        <div class="risk-top-note"><span class="info-icon" aria-hidden="true">i</span><p>Risk limits and estimates are informational. They do not prevent losses, guarantee safety, connect to a broker, or execute trades. Gold/XAUUSD contract terms vary by broker; never use a calculated size until you have verified your broker's specifications.</p></div>
+
+        <div class="risk-layout-grid">
+          <section class="panel risk-settings-panel" aria-labelledby="risk-settings-title">
+            <div class="panel-heading"><div><h2 id="risk-settings-title">Account &amp; broker settings</h2><p>Saved on this device with your existing GoldTrack preferences.</p></div><span class="subtle-pill">LOCAL</span></div>
+            <form id="risk-settings-form" novalidate>
+              <div class="risk-form-grid">
+                <label class="form-field"><span>Account balance <b>*</b></span><input id="risk-setting-balance" type="number" min="0.01" step="any" required inputmode="decimal" placeholder="e.g. 10000"></label>
+                <label class="form-field"><span>Account currency <b>*</b></span><select id="risk-setting-currency"><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Pound Sterling</option><option value="CAD">CAD — Canadian Dollar</option><option value="AUD">AUD — Australian Dollar</option><option value="JPY">JPY — Japanese Yen</option><option value="CHF">CHF — Swiss Franc</option><option value="NZD">NZD — New Zealand Dollar</option></select></label>
+                <label class="form-field"><span>Max planned risk per trade (%) <b>*</b></span><input id="risk-setting-limit" type="number" min="0.01" max="100" step="any" required inputmode="decimal" placeholder="e.g. 1"></label>
+                <label class="form-field"><span>Maximum daily loss (optional)</span><input id="risk-setting-daily-limit" type="number" min="0.01" step="any" inputmode="decimal" placeholder="Account currency amount"></label>
+                <label class="form-field field-wide"><span>Default trading symbol</span><input id="risk-setting-symbol" type="text" maxlength="30" value="XAUUSD" placeholder="XAUUSD"></label>
+              </div>
+              <div class="risk-specs-heading"><div><strong>Broker contract specifications</strong><p>Leave blank unless you have verified the exact values with your broker.</p></div><span class="spec-optional-tag">OPTIONAL</span></div>
+              <div class="risk-form-grid specs-grid">
+                <label class="form-field"><span>Contract size (units per lot)</span><input id="risk-spec-contract" type="number" min="0" step="any" inputmode="decimal" placeholder="Broker-defined"></label>
+                <label class="form-field"><span>Tick / point size</span><input id="risk-spec-tick-size" type="number" min="0" step="any" inputmode="decimal" placeholder="Price units per tick"></label>
+                <label class="form-field"><span>Tick / point value per lot</span><input id="risk-spec-tick-value" type="number" min="0" step="any" inputmode="decimal" placeholder="Broker-defined value"></label>
+                <label class="form-field"><span>Tick value currency</span><select id="risk-spec-value-currency"><option value="">Same as account currency</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option><option value="JPY">JPY</option><option value="CHF">CHF</option><option value="NZD">NZD</option></select></label>
+                <label class="form-field"><span>Minimum lot size</span><input id="risk-spec-min-lot" type="number" min="0" step="any" inputmode="decimal" placeholder="Broker-defined"></label>
+                <label class="form-field"><span>Lot step</span><input id="risk-spec-lot-step" type="number" min="0" step="any" inputmode="decimal" placeholder="Broker-defined"></label>
+                <label class="form-field field-wide"><span>Quote / tick currency to account currency conversion</span><input id="risk-spec-conversion" type="number" min="0" step="any" inputmode="decimal" placeholder="Optional manually verified conversion rate"><span class="field-help">Enter account-currency units per 1 unit of quote/tick currency (for example, USD per EUR). Use only a rate verified for your broker; none is fetched automatically.</span></label>
+              </div>
+              <p class="form-error" id="risk-settings-error" role="alert" hidden></p>
+              <div class="form-actions"><button class="button button-primary" type="submit">Save account &amp; broker settings</button></div>
+            </form>
+          </section>
+
+          <section class="panel risk-calculator-panel" aria-labelledby="risk-calculator-title">
+            <div class="panel-heading"><div><h2 id="risk-calculator-title">Risk calculator</h2><p>Calculate a planned risk budget and price distances.</p></div><span class="subtle-pill">NO ORDERS</span></div>
+            <form id="risk-calculator-form" novalidate>
+              <div class="risk-form-grid calculator-grid">
+                <label class="form-field"><span>Account balance</span><input id="risk-calc-balance" type="number" min="0.01" step="any" inputmode="decimal" placeholder="Account balance"></label>
+                <label class="form-field"><span>Risk percentage</span><div class="percent-input-wrap"><input id="risk-calc-percent" type="number" min="0.01" max="100" step="any" inputmode="decimal" placeholder="1"><span>%</span></div></label>
+                <label class="form-field"><span>Symbol</span><input id="risk-calc-symbol" type="text" maxlength="30" placeholder="XAUUSD"></label>
+                <label class="form-field"><span>Direction</span><select id="risk-calc-direction"><option value="Buy">Buy</option><option value="Sell">Sell</option></select></label>
+                <label class="form-field"><span>Entry price</span><input id="risk-calc-entry" type="number" min="0" step="any" inputmode="decimal" placeholder="Entry price"></label>
+                <label class="form-field"><span>Stop-loss price</span><input id="risk-calc-stop" type="number" min="0" step="any" inputmode="decimal" placeholder="Stop-loss"></label>
+                <label class="form-field"><span>Take-profit price</span><input id="risk-calc-target" type="number" min="0" step="any" inputmode="decimal" placeholder="Take-profit"></label>
+                <label class="form-field"><span>Position size (lots) <span class="field-optional">optional</span></span><input id="risk-calc-lots" type="number" min="0" step="any" inputmode="decimal" placeholder="Optional"></label>
+              </div>
+              <div class="risk-output-grid" aria-live="polite">
+                <article class="risk-output-card"><span>Planned risk budget</span><strong id="risk-output-budget">—</strong><small>Balance × risk percentage</small></article>
+                <article class="risk-output-card"><span>Stop / target distance</span><strong id="risk-output-distance">—</strong><small id="risk-output-distance-note">Price units</small></article>
+                <article class="risk-output-card"><span>Risk-to-reward</span><strong id="risk-output-rr">—</strong><small>Target distance ÷ stop distance</small></article>
+                <article class="risk-output-card"><span>Estimated risk for entered lots</span><strong id="risk-output-position-risk">Unavailable</strong><small id="risk-output-position-risk-note">Requires verified broker specifications.</small></article>
+                <article class="risk-output-card"><span>Potential reward for entered lots</span><strong id="risk-output-reward">Unavailable</strong><small id="risk-output-reward-note">Requires verified broker specifications.</small></article>
+              </div>
+              <div class="risk-warning-box" id="risk-warning-box" role="status" aria-live="polite"><strong id="risk-warning-title">Check this plan</strong><ul id="risk-warning-list"></ul></div>
+              <p class="daily-risk-status" id="daily-risk-status"></p>
+              <p class="risk-form-error" id="risk-calculator-error" role="alert" hidden></p>
+              <div class="form-actions risk-plan-actions"><button class="text-button" id="reset-risk-calculator" type="button">Reset calculator</button><button class="button button-primary" id="save-risk-plan" type="button">Save risk plan</button></div>
+            </form>
+          </section>
+        </div>
+
+        <section class="panel risk-plans-panel" aria-labelledby="risk-plans-title">
+          <div class="panel-heading risk-plans-heading"><div><h2 id="risk-plans-title">Risk planning history</h2><p><span id="risk-plan-count">0 saved plans</span> · stored separately from completed journal trades</p></div><span class="subtle-pill">LOCAL PLANS</span></div>
+          <div class="risk-plans-table-wrap"><table class="risk-plans-table"><thead><tr><th>DATE</th><th>SYMBOL</th><th>DIR.</th><th>ENTRY</th><th>STOP-LOSS</th><th>TAKE-PROFIT</th><th>PLANNED RISK</th><th>R:R</th><th>ACTIONS</th></tr></thead><tbody id="risk-plans-body"></tbody></table></div>
+          <div class="risk-plans-empty" id="risk-plans-empty"><span class="journal-empty-icon" aria-hidden="true">◇</span><strong>No saved risk plans yet</strong><p>Calculate a setup, then save it here. Plans never become journal trades automatically.</p></div>
+        </section>
+        <div class="analytics-method-note risk-method-note"><span aria-hidden="true">ⓘ</span><p>A reliable lot-size estimate needs verified contract size or tick / point value and tick size, minimum lot, lot step, account currency, and any necessary currency conversion. Gold instruments differ between brokers. If required values are missing, GoldTrack leaves position risk and reward unavailable. The daily-loss indicator uses only dated, closed journal results recorded today in the configured account currency; it does not include open/floating P/L, commissions, or unrecorded trades.</p></div>
+        <footer class="page-footer"><span>Planning only · No broker connection or order execution.</span><span>Risk plans are saved separately from actual journal records.</span></footer>
+      </section>
+
+      <section class="view" id="strategy-view" aria-labelledby="strategy-title" hidden>
+        <div class="page-heading strategy-page-heading">
+          <div><p class="eyebrow">DESIGN YOUR RULES</p><h1 id="strategy-title">Strategy Builder</h1><p class="page-subtitle">Create and organize visual strategy definitions. This page does not generate signals or trade.</p></div>
+          <button class="button button-primary" id="new-strategy-button" type="button"><span aria-hidden="true">＋</span> Create strategy</button>
+        </div>
+
+        <div class="strategy-safety-note"><span class="info-icon" aria-hidden="true">i</span><p>Visual strategy definitions are saved locally. Stage 4 can simulate supplied historical CSV candles, but it does not fetch live data, generate live signals, connect to a broker, or place trades. Strategies do not sync between devices.</p></div>
+
+        <section class="panel strategy-editor" id="strategy-editor" aria-labelledby="strategy-form-title" hidden>
+          <div class="panel-heading"><div><h2 id="strategy-form-title">Create a strategy</h2><p>Describe your rules in plain language; indicators are not evaluated in this stage.</p></div><button class="icon-button" id="close-strategy-editor" type="button" aria-label="Close strategy form">×</button></div>
+          <form id="strategy-form" novalidate>
+            <input id="strategy-id" type="hidden">
+            <div class="strategy-field-grid">
+              <label class="strategy-field"><span>Strategy name <b>*</b></span><input id="strategy-name" type="text" maxlength="80" required placeholder="e.g. London EMA pullback"></label>
+              <label class="strategy-field"><span>Trading symbol <b>*</b></span><input id="strategy-symbol" type="text" value="XAUUSD" maxlength="30" required placeholder="XAUUSD"></label>
+              <label class="strategy-field"><span>Timeframe <b>*</b></span><select id="strategy-timeframe"><option value="1m">1 minute</option><option value="5m">5 minutes</option><option value="15m">15 minutes</option><option value="30m">30 minutes</option><option value="1h">1 hour</option><option value="4h">4 hours</option><option value="1D" selected>1 day</option><option value="1W">1 week</option><option value="1M">1 month</option></select></label>
+              <label class="strategy-field strategy-wide"><span>Description</span><textarea id="strategy-description" rows="2" maxlength="1000" placeholder="What market behavior is this strategy designed for?"></textarea></label>
+            </div>
+
+            <div class="strategy-rule-section">
+              <div class="strategy-rule-heading"><div><h3><span class="direction-indicator buy-indicator"></span>Buy conditions</h3><p>Conditions that define your planned buy setup</p></div><button class="small-action" id="add-buy-rule" type="button">＋ Add buy condition</button></div>
+              <div class="strategy-rule-list" id="buy-rule-list"></div>
+              <p class="strategy-rule-empty" id="buy-rule-empty">No buy conditions yet. Add rules to describe a buy setup.</p>
+            </div>
+
+            <div class="strategy-rule-section">
+              <div class="strategy-rule-heading"><div><h3><span class="direction-indicator sell-indicator"></span>Sell conditions</h3><p>Conditions that define your planned sell setup</p></div><button class="small-action" id="add-sell-rule" type="button">＋ Add sell condition</button></div>
+              <div class="strategy-rule-list" id="sell-rule-list"></div>
+              <p class="strategy-rule-empty" id="sell-rule-empty">No sell conditions yet. Add rules to describe a sell setup.</p>
+            </div>
+
+            <div class="strategy-rule-section exit-section">
+              <div class="strategy-rule-heading"><div><h3>Stop-loss &amp; take-profit</h3><p>Optional planned exit settings; no prices are calculated from market data.</p></div></div>
+              <div class="strategy-field-grid exit-settings-grid">
+                <label class="strategy-field"><span>Stop-loss type</span><select id="strategy-stop-type"><option value="none">Not specified</option><option value="price-distance">Price distance</option><option value="percentage">Percentage from entry</option></select></label>
+                <label class="strategy-field"><span id="strategy-stop-value-label">Stop-loss value</span><input id="strategy-stop-value" type="number" min="0" step="any" inputmode="decimal" placeholder="Optional" disabled></label>
+                <label class="strategy-field"><span>Take-profit type</span><select id="strategy-target-type"><option value="none">Not specified</option><option value="price-distance">Price distance</option><option value="percentage">Percentage from entry</option><option value="risk-reward">Risk-to-reward multiple</option></select></label>
+                <label class="strategy-field"><span id="strategy-target-value-label">Take-profit value</span><input id="strategy-target-value" type="number" min="0" step="any" inputmode="decimal" placeholder="Optional" disabled></label>
+                <label class="strategy-field"><span>Optional risk per trade (%)</span><input id="strategy-risk-percent" type="number" min="0.01" max="100" step="any" inputmode="decimal" placeholder="e.g. 1"></label>
+              </div>
+            </div>
+
+            <div class="strategy-summary-box"><div class="strategy-summary-heading"><span class="summary-spark" aria-hidden="true">✦</span><div><strong>Readable rule summary</strong><small>Review the definition before saving</small></div></div><p id="strategy-summary-text">Add your strategy details and visual conditions to see a summary.</p></div>
+            <div class="strategy-preview-box">
+              <div class="strategy-preview-heading"><div><strong>Rule evaluation preview</strong><small>Uses fixed synthetic values only — not market data</small></div><button class="small-action" id="run-strategy-preview" type="button">Run synthetic preview</button></div>
+              <p class="strategy-preview-disclaimer">Checks whether your current rules match a small artificial data sample. It is a software test only; it is not a backtest, live signal, or performance result.</p>
+              <div class="strategy-preview-results" id="strategy-preview-results" aria-live="polite"><span>Preview has not been run.</span></div>
+            </div>
+            <p class="strategy-form-error" id="strategy-form-error" role="alert" hidden></p>
+            <div class="strategy-form-actions"><button class="button button-secondary" id="cancel-strategy-edit" type="button">Cancel</button><button class="button button-primary" id="save-strategy-button" type="submit">Save strategy</button></div>
+          </form>
+        </section>
+
+        <section class="panel strategy-library" aria-labelledby="strategy-library-title">
+          <div class="panel-heading strategy-library-heading"><div><h2 id="strategy-library-title">My strategies</h2><p><span id="strategy-count">0 saved strategies</span> · stored in this browser only</p></div><span class="subtle-pill">LOCAL LIBRARY</span></div>
+          <div class="strategy-library-empty" id="strategy-library-empty"><span class="journal-empty-icon" aria-hidden="true">⌘</span><strong>No strategies saved yet</strong><p>Create a visual strategy definition and it will appear here. Saving one does not run it.</p><button class="button button-primary" id="empty-create-strategy" type="button">Create your first strategy</button></div>
+          <div class="strategy-card-list" id="strategy-card-list"></div>
+        </section>
+        <section class="panel backtest-panel" aria-labelledby="backtest-title">
+          <div class="panel-heading backtest-heading"><div><p class="eyebrow">STAGE 4 · HISTORICAL SIMULATION</p><h2 id="backtest-title">Historical Backtesting</h2><p>Select a saved rule set and a validated OHLC CSV file to run an offline simulation.</p></div><span class="backtest-badge">NO LIVE SIGNALS</span></div>
+          <div class="backtest-honesty-note"><span class="info-icon" aria-hidden="true">i</span><p>Results are historical simulations, not predictions or guaranteed returns. This tool does not fetch market data, execute trades, or save simulated trades to your journal. Short selling is modeled as a simple symmetric position; borrow costs, funding, margin calls, partial fills, and swap are not included.</p></div>
+          <div class="backtest-layout">
+            <div class="backtest-controls">
+              <div class="backtest-control-grid">
+                <label class="strategy-field"><span>Saved strategy <b>*</b></span><select id="backtest-strategy-select"><option value="">Select a saved strategy</option></select></label>
+                <label class="strategy-field"><span>Historical OHLC CSV <b>*</b></span><input id="backtest-file" type="file" accept=".csv,text/csv"></label>
+                <p class="backtest-file-state" id="backtest-file-state" role="status">No candle dataset loaded. Data is kept in memory and cleared when the page is refreshed.</p>
+                <label class="strategy-field"><span>Starting account balance <b>*</b></span><input id="backtest-start-balance" type="number" min="0.01" step="any" inputmode="decimal" placeholder="e.g. 10000"></label>
+                <label class="strategy-field"><span>Position sizing <b>*</b></span><select id="backtest-sizing-mode"><option value="fixed">Fixed position units</option><option value="risk">Risk % per trade</option></select></label>
+                <label class="strategy-field" id="backtest-fixed-units-field"><span>Fixed position units <b>*</b></span><input id="backtest-fixed-units" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="e.g. 1"></label>
+                <label class="strategy-field" id="backtest-risk-percent-field" hidden><span>Risk per trade (%) <b>*</b></span><input id="backtest-risk-percent" type="number" min="0.01" max="100" step="any" inputmode="decimal" placeholder="e.g. 1"></label>
+                <label class="strategy-field"><span>Account currency <b>*</b></span><select id="backtest-currency"><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option><option value="JPY">JPY</option><option value="CHF">CHF</option><option value="NZD">NZD</option></select></label>
+                <label class="strategy-field"><span>P/L currency value per 1.0 price move per unit <b>*</b></span><input id="backtest-point-value" type="number" min="0.000001" step="any" inputmode="decimal" placeholder="Must be verified/configured"><small>Explicit instrument assumption: account-currency amount for a 1.0 price move on one position unit. Not a lot size or broker specification.</small></label>
+                <label class="strategy-field"><span>Spread assumption (price units, full spread)</span><input id="backtest-spread" type="number" min="0" step="any" inputmode="decimal" value="0" placeholder="0"></label>
+                <label class="strategy-field"><span>Commission per unit per side (account currency)</span><input id="backtest-commission" type="number" min="0" step="any" inputmode="decimal" value="0" placeholder="0"></label>
+                <label class="strategy-field"><span>Slippage per fill (price units, adverse)</span><input id="backtest-slippage" type="number" min="0" step="any" inputmode="decimal" value="0" placeholder="0"></label>
+                <label class="strategy-field"><span>From date (optional)</span><input id="backtest-date-from" type="date"></label>
+                <label class="strategy-field"><span>To date (optional)</span><input id="backtest-date-to" type="date"></label>
+              </div>
+              <div class="backtest-control-actions"><button class="button button-secondary" id="clear-backtest-data" type="button">Clear dataset/results</button><button class="button button-primary" id="run-backtest" type="button">Run historical simulation</button></div>
+              <p class="backtest-form-error" id="backtest-error" role="alert" hidden></p>
+            </div>
+            <aside class="backtest-assumptions"><h3>Execution assumptions</h3><ul><li>CSV candles must be chronological OHLC with valid timestamps and prices.</li><li>Rules are checked only at each candle close; entry is at the next candle open.</li><li>Spread is split around entry/exit; slippage is adverse at each fill.</li><li>If stop and target are both touched in one candle, stop-loss is assumed first.</li><li>One open position maximum; no pyramiding. Any position still open at the final candle is closed there with costs.</li><li>Position units are abstract. Enter a verified currency value per 1.0 price move per unit; no XAUUSD lot/tick value is assumed.</li></ul></aside>
+          </div>
+          <div class="backtest-results" id="backtest-results" hidden>
+            <div class="backtest-results-heading"><div><h3>Simulation results</h3><p id="backtest-result-caption">Historical simulation · Selected dataset only</p></div><span class="backtest-results-badge">NOT A FORECAST</span></div>
+            <div class="backtest-metrics-grid">
+              <article class="metric-card metric-primary"><div class="metric-top"><span>Net P/L after costs</span></div><strong class="metric-value" id="backtest-net">—</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Ending balance</span></div><strong class="metric-value" id="backtest-ending-balance">—</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Closed simulations</span></div><strong class="metric-value" id="backtest-trade-count">0</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Wins / losses</span></div><strong class="metric-value" id="backtest-win-loss">0 / 0</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Win rate</span></div><strong class="metric-value" id="backtest-win-rate">—</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Gross profit</span></div><strong class="metric-value" id="backtest-gross-profit">—</strong><div class="metric-foot">Before modeled costs</div></article>
+              <article class="metric-card"><div class="metric-top"><span>Gross loss</span></div><strong class="metric-value" id="backtest-gross-loss">—</strong><div class="metric-foot">Absolute value · before costs</div></article>
+              <article class="metric-card"><div class="metric-top"><span>Average win / loss</span></div><strong class="metric-value" id="backtest-averages">—</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Profit factor</span></div><strong class="metric-value" id="backtest-profit-factor">—</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Maximum drawdown</span></div><strong class="metric-value" id="backtest-drawdown">—</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Total costs</span></div><strong class="metric-value" id="backtest-costs">—</strong></article>
+              <article class="metric-card"><div class="metric-top"><span>Signals skipped at data end</span></div><strong class="metric-value" id="backtest-skipped">0</strong></article>
+            </div>
+            <article class="panel backtest-equity-panel"><div class="panel-heading"><div><h3>Simulated equity curve</h3><p>Starting balance plus chronological net results</p></div><span class="chart-period">SIMULATED</span></div><div id="backtest-equity-chart" class="backtest-equity-chart" role="img" aria-label="Simulated equity curve"></div></article>
+            <div class="backtest-table-wrap"><table class="backtest-trades-table"><thead><tr><th>DIR.</th><th>ENTRY TIME</th><th>ENTRY FILL</th><th>EXIT TIME</th><th>EXIT FILL</th><th>UNITS</th><th>GROSS P/L</th><th>COSTS</th><th>NET P/L</th><th>EXIT REASON</th></tr></thead><tbody id="backtest-trades-body"></tbody></table></div>
+          </div>
+        </section>
+        <footer class="page-footer"><span>Visual rules and historical simulations only.</span><span>No live signals, custom-code execution, broker connection, or trading.</span></footer>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog class="trade-detail-dialog" id="trade-detail-dialog" aria-labelledby="trade-detail-title"><div class="dialog-heading"><div><p class="eyebrow">TRADE RECORD</p><h2 id="trade-detail-title">Trade details</h2></div><button class="icon-button" id="close-detail-dialog" type="button" aria-label="Close trade details">×</button></div><div id="trade-detail-content" class="trade-detail-content"></div><div class="dialog-actions"><button class="button button-secondary" id="detail-edit-button" type="button">Edit trade</button><button class="button button-primary" id="detail-close-button" type="button">Done</button></div></dialog>
+</body>
+</html>
